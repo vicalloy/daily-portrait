@@ -1,3 +1,10 @@
+input/
+output/
+!input/.gitkeep
+!output/.gitkeep
+.DS_Store
+*.avi
+.ruff_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
