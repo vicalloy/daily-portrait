@@ -4,6 +4,7 @@ output/*
 !output/.gitkeep
 .DS_Store
 *.avi
+*.gif
 .ruff_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
