@@ -1,2 +1,2 @@
 # flake8: noqa
-from alignment import align_faces
+from .alignment import align_faces
