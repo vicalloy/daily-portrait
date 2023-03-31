@@ -3,7 +3,7 @@ from typing import Iterable, cast
 
 import cv2
 import face_recognition
-from PIL import Image
+from PIL import Image, ImageFilter
 
 from daily_portrait import settings
 from daily_portrait.alignment import get_eyes_points, move_face, rotation_face
@@ -48,6 +48,13 @@ def as_pil_image(ctx: dict):
     ctx["pil-image"] = Image.fromarray(image.astype("uint8"), "RGB")
 
 
+def pil_min_filter(ctx: dict):
+    if not settings.pil_min_filter_size:
+        return
+    im = ctx["pil-image"]
+    ctx["pil-image"] = im.filter(ImageFilter.MinFilter(settings.pil_min_filter_size))
+
+
 def save_image(ctx: dict):
     output_dir = cast(Path, ctx["output-dir"])
     image_path = cast(Path, ctx.get("image-path"))
@@ -58,4 +65,4 @@ def save_image(ctx: dict):
     cv2.imwrite(output_fn, cv2.cvtColor(ctx["np-image"], cv2.COLOR_RGB2BGR))
 
 
-default_filters = [align_face, crop_face, as_pil_image]
+default_filters = [align_face, crop_face, as_pil_image, pil_min_filter]
