@@ -4,6 +4,7 @@ from pathlib import Path
 import cv2
 import face_recognition
 import numpy as np
+from PIL import Image
 
 standard_center_point: tuple[int, int] | None = None
 standard_eyes_dist: float | None = None
@@ -103,9 +104,8 @@ def align_face(image_path: Path, output_dir: Path, crop_rate=0.8):
     left_eye, right_eye = get_eyes_points(image=image)
     image = move_face(left_eye, right_eye, width, height, image)
     image = crop_image(image=image, crop_rate=crop_rate)
-    cv2.imwrite(
-        str(output_dir / image_path.name), cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    )
+    pil_image = Image.fromarray(image.astype("uint8"), "RGB")
+    pil_image.save(str(output_dir / image_path.name))
 
 
 def align_faces(input_dir: Path, output_dir: Path):
