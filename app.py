@@ -2,7 +2,8 @@ import logging
 from pathlib import Path
 
 from daily_portrait import process_images
-from daily_portrait.utils import images_to_gif, rename_photos
+from daily_portrait.utils import rename_photos
+from daily_portrait.video import images_to_gif
 
 
 def config_logging():

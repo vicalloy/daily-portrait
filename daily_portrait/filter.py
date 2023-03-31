@@ -6,7 +6,7 @@ import face_recognition
 from PIL import Image, ImageFilter
 
 from daily_portrait import settings
-from daily_portrait.alignment import get_eyes_points, move_face, rotation_face
+from daily_portrait.utils.alignment import get_eyes_points, move_face, rotation_face
 
 
 def load_image_as_np(ctx: dict, fn: Path):
