@@ -100,6 +100,7 @@ def align_face(image_path: Path, output_dir: Path, crop_rate=0.8):
     left_eye, right_eye = get_eyes_points(image=image)
     image = rotation_face(left_eye, right_eye, width, height, image)
 
+    left_eye, right_eye = get_eyes_points(image=image)
     image = move_face(left_eye, right_eye, width, height, image)
     image = crop_image(image=image, crop_rate=crop_rate)
     cv2.imwrite(
@@ -108,5 +109,5 @@ def align_face(image_path: Path, output_dir: Path, crop_rate=0.8):
 
 
 def align_faces(input_dir: Path, output_dir: Path):
-    for img in input_dir.glob("*.jpg"):
+    for img in input_dir.glob("*.jpeg"):
         align_face(img, output_dir)

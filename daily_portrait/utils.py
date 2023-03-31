@@ -4,13 +4,19 @@ import cv2
 from PIL import Image
 
 
-def get_frame_size(org_frame_size: tuple[int, int], img_height: int, img_width: int):
+def get_frame_size(
+    org_frame_size: tuple[int, int] | None, img_height: int, img_width: int
+):
+    if org_frame_size is None:
+        return img_width, img_height
     if org_frame_size[1] > 0:
         return org_frame_size
     return org_frame_size[0], int(img_height * (org_frame_size[0] / img_width))
 
 
-def images_to_video(input_dir: Path, output: Path, frame_size: tuple[int, int]):
+def images_to_video(
+    input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
+):
     out = cv2.VideoWriter(
         output.absolute(), cv2.VideoWriter_fourcc(*"DIVX"), 1, frame_size
     )
@@ -23,9 +29,11 @@ def images_to_video(input_dir: Path, output: Path, frame_size: tuple[int, int]):
     out.release()
 
 
-def images_to_gif(input_dir: Path, output: Path, frame_size: tuple[int, int]):
+def images_to_gif(
+    input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
+):
     images = []
-    for img_filename in input_dir.glob("*.jpg"):
+    for img_filename in input_dir.glob("*.jpeg"):
         with Image.open(img_filename) as img:
             frame_size = get_frame_size(frame_size, img.height, img.width)
             img = img.resize(frame_size)
