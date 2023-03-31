@@ -3,6 +3,8 @@ from pathlib import Path
 import cv2
 from PIL import Image
 
+from daily_portrait import settings
+
 
 def get_frame_size(
     org_frame_size: tuple[int, int] | None, img_height: int, img_width: int
@@ -20,7 +22,7 @@ def images_to_video(
     out = cv2.VideoWriter(
         output.absolute(), cv2.VideoWriter_fourcc(*"DIVX"), 1, frame_size
     )
-    for img_filename in input_dir.glob("*.jpg"):
+    for img_filename in input_dir.glob(settings.image_pattern):
         img = cv2.imread(img_filename.absolute())
         height, width = img.shape[:2]
         frame_size = get_frame_size(frame_size, height, width)
@@ -33,7 +35,7 @@ def images_to_gif(
     input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
 ):
     images = []
-    for img_filename in input_dir.glob("*.jpeg"):
+    for img_filename in input_dir.glob(settings.image_pattern):
         with Image.open(img_filename) as img:
             frame_size = get_frame_size(frame_size, img.height, img.width)
             img = img.resize(frame_size)
@@ -50,7 +52,7 @@ def images_to_gif(
 
 def rename_photos(images_dir: Path):
     todo_names: list[tuple[Path, Path]] = []
-    for img_filename in images_dir.glob("*.jpg"):
+    for img_filename in images_dir.glob(settings.image_pattern):
         with Image.open(img_filename) as img:
             img_exif = img.getexif()
             if img_exif is None:

@@ -5,6 +5,7 @@ import cv2
 import face_recognition
 from PIL import Image
 
+from daily_portrait import settings
 from daily_portrait.alignment import get_eyes_points, move_face, rotation_face
 
 
@@ -29,7 +30,9 @@ def align_face(ctx: dict):
 
 
 def crop_face(ctx: dict):
-    crop_rate = 0.8
+    crop_rate = settings.crop_rate
+    if not crop_rate or crop_rate == 1:
+        return
     image, height, width = get_values(ctx, ["np-image", "height", "width"])
     y_cut = int(height * (1 - crop_rate) / 2)
     top = y_cut

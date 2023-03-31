@@ -6,9 +6,9 @@ import cv2
 import face_recognition
 import numpy as np
 
+from daily_portrait import settings
+
 Point: TypeAlias = tuple[int, int]
-standard_center_point: Point | None = None
-standard_eyes_dist: float | None = None
 logger = logging.getLogger(__name__)
 
 
@@ -29,33 +29,32 @@ def get_rotation_matrix(p1: Point, p2: Point, scale):
     angle = angle_between_2_points(p1, p2)
     center_point = points_center([p1, p2])
     xc, yc = center_point
-    logger.debug("center:", center_point)
+    logger.debug(f"center: {center_point}")
     # TODO calculate scale
     return cv2.getRotationMatrix2D((xc, yc), angle, scale)
 
 
 def get_eyes_points(image: np.ndarray):
     face_landmarks: np.ndarray = face_recognition.face_landmarks(image)
-    logger.debug("find face count:", len(face_landmarks))
+    logger.debug(f"find face count: {len(face_landmarks)}")
     assert len(face_landmarks) == 1
     face_landmarks = face_landmarks[0]
 
     # print(face_landmarks)
     left_eye = points_center(face_landmarks["left_eye"])
     right_eye = points_center(face_landmarks["right_eye"])
-    logger.debug("eyes:", left_eye, right_eye)
+    logger.debug(f"eyes: {left_eye} {right_eye}")
     return left_eye, right_eye
 
 
 def get_scale(left_eye, right_eye):
     dist = math.dist(left_eye, right_eye)
-    logger.debug("dist:", dist)
+    logger.debug(f"dist: {dist}")
     scale = 1
-    global standard_eyes_dist
-    if standard_eyes_dist:
-        scale = standard_eyes_dist / dist
+    if settings.standard_eyes_dist:
+        scale = settings.standard_eyes_dist / dist
     else:
-        standard_eyes_dist = dist
+        settings.standard_eyes_dist = dist
     return scale
 
 
@@ -64,20 +63,20 @@ def rotation_face(
 ):
     scale = get_scale(left_eye, right_eye)
     matrix = get_rotation_matrix(left_eye, right_eye, scale)
-    logger.debug("matrix:", matrix)
+    logger.debug(f"matrix: {matrix}")
     return cv2.warpAffine(image, matrix, (width, height), flags=cv2.INTER_CUBIC)
 
 
 def get_move_vector(left_eye: Point, right_eye: Point):
-    global standard_center_point
     center_point = points_center([left_eye, right_eye])
-    logger.debug("center:", center_point)
+    logger.debug(f"center: {center_point}")
     move_x, move_y = 0, 0
-    if standard_center_point:
+
+    if standard_center_point := settings.standard_center_point:
         move_x = standard_center_point[0] - center_point[0]
         move_y = standard_center_point[1] - center_point[1]
     else:
-        standard_center_point = center_point
+        settings.standard_center_point = center_point
     return move_x, move_y
 
 
