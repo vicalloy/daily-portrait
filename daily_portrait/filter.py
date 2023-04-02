@@ -6,6 +6,7 @@ import face_recognition
 from PIL import Image, ImageFilter
 
 from daily_portrait import settings
+from daily_portrait.utils import get_image_date
 from daily_portrait.utils.alignment import get_eyes_points, move_face, rotation_face
 
 
@@ -43,6 +44,28 @@ def crop_face(ctx: dict):
     ctx["np-image"] = image[top:bottom, left:right]
 
 
+def add_date(ctx: dict):
+    image, height, width, fn = get_values(
+        ctx, ["np-image", "height", "width", "image-path"]
+    )
+    date = get_image_date(fn)
+    if not date:
+        return
+    date = date[:10]
+    font_scale = (width + height) / 560.0
+    font_size = 0.4 * font_scale
+    thickness = round(font_scale) or 1
+    cv2.putText(
+        image,
+        date,
+        (width // 15, height * 15 // 20),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        font_size,
+        (255, 0, 0),
+        thickness,
+    )
+
+
 def as_pil_image(ctx: dict):
     image = ctx["np-image"]
     ctx["pil-image"] = Image.fromarray(image.astype("uint8"), "RGB")
@@ -65,4 +88,4 @@ def save_image(ctx: dict):
     cv2.imwrite(output_fn, cv2.cvtColor(ctx["np-image"], cv2.COLOR_RGB2BGR))
 
 
-default_filters = [align_face, crop_face, as_pil_image, pil_min_filter]
+default_filters = [align_face, crop_face, add_date, as_pil_image, pil_min_filter]

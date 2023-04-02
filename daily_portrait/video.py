@@ -19,15 +19,19 @@ def get_frame_size(
 def images_to_video(
     input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
 ):
-    out = cv2.VideoWriter(
-        output.absolute(), cv2.VideoWriter_fourcc(*"DIVX"), settings.fps, frame_size
-    )
-    for img_filename in input_dir.glob(settings.image_pattern):
-        img = cv2.imread(img_filename.absolute())
-        height, width = img.shape[:2]
-        frame_size = get_frame_size(frame_size, height, width)
+    files = sorted(input_dir.glob(settings.image_pattern))
+    out = None
+    for img_filename in files:
+        img = cv2.imread(str(img_filename))
+        if out is None:
+            height, width = img.shape[:2]
+            frame_size = get_frame_size(frame_size, height, width)
+            out = cv2.VideoWriter(
+                str(output), cv2.VideoWriter_fourcc(*"DIVX"), settings.fps, frame_size
+            )
         img = cv2.resize(img, frame_size)
         out.write(img)
+    assert out is not None
     out.release()
 
 
