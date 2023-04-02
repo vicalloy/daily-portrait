@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Iterable, TypeAlias
+from typing import TypeAlias
 
 import cv2
 import face_recognition
@@ -12,10 +12,10 @@ Point: TypeAlias = tuple[int, int]
 logger = logging.getLogger(__name__)
 
 
-def points_center(points: Iterable[Point]) -> Point:
+def points_center(points: list[Point]) -> Point:
     xs = (e[0] for e in points)
     ys = (e[1] for e in points)
-    return sum(xs) // 6, sum(ys) // 6
+    return sum(xs) // len(points), sum(ys) // len(points)
 
 
 def angle_between_2_points(p1: Point, p2: Point):
