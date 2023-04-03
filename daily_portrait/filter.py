@@ -25,7 +25,6 @@ def align_face(ctx: dict):
     image, height, width = get_values(ctx, ["np-image", "height", "width"])
     left_eye, right_eye = get_eyes_points(image=image)
     image = rotation_face(left_eye, right_eye, width, height, image)
-    left_eye, right_eye = get_eyes_points(image=image)
     image = move_face(left_eye, right_eye, width, height, image)
     ctx["np-image"] = image
 
@@ -42,6 +41,8 @@ def crop_face(ctx: dict):
     left = x_cut
     right = width - x_cut
     ctx["np-image"] = image[top:bottom, left:right]
+    ctx["height"] = bottom - top
+    ctx["width"] = right - left
 
 
 def add_date(ctx: dict):
@@ -58,7 +59,7 @@ def add_date(ctx: dict):
     cv2.putText(
         image,
         date,
-        (width // 15, height * 15 // 20),
+        (width // 15, height * 14 // 15),
         cv2.FONT_HERSHEY_SIMPLEX,
         font_size,
         (255, 0, 0),

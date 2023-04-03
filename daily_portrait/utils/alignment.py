@@ -30,7 +30,6 @@ def get_rotation_matrix(p1: Point, p2: Point, scale):
     center_point = points_center([p1, p2])
     xc, yc = center_point
     logger.debug(f"center: {center_point}")
-    # TODO calculate scale
     return cv2.getRotationMatrix2D((xc, yc), angle, scale)
 
 
