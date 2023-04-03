@@ -16,9 +16,8 @@ def get_frame_size(
     return org_frame_size[0], int(img_height * (org_frame_size[0] / img_width))
 
 
-def images_to_video(
-    input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
-):
+def images_to_video(input_dir: Path, output: Path):
+    frame_size = settings.frame_size
     files = sorted(input_dir.glob(settings.image_pattern))
     out = None
     for img_filename in files:
@@ -35,12 +34,10 @@ def images_to_video(
     out.release()
 
 
-def images_to_gif(
-    input_dir: Path, output: Path, frame_size: tuple[int, int] | None = None
-):
+def images_to_gif(input_dir: Path, output: Path):
     images = []
-    files = list(input_dir.glob(settings.image_pattern))
-    files.sort()
+    frame_size = settings.frame_size
+    files = sorted(input_dir.glob(settings.image_pattern))
     for img_filename in files:
         with Image.open(img_filename) as img:
             frame_size = get_frame_size(frame_size, img.height, img.width)

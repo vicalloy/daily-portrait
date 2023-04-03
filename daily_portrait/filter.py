@@ -1,12 +1,12 @@
 from pathlib import Path
-from typing import Iterable, cast
+from typing import cast
 
 import cv2
 import face_recognition
 from PIL import Image, ImageFilter
 
 from daily_portrait import settings
-from daily_portrait.utils import get_image_date
+from daily_portrait.utils import get_image_date, get_values
 from daily_portrait.utils.alignment import get_eyes_points, move_face, rotation_face
 
 
@@ -15,10 +15,6 @@ def load_image_as_np(ctx: dict, fn: Path):
     ctx["image-path"] = fn
     ctx["np-image"] = image
     ctx["height"], ctx["width"] = image.shape[:2]
-
-
-def get_values(ctx: dict, keys: Iterable):
-    return (ctx[e] for e in keys)
 
 
 def align_face(ctx: dict):

@@ -13,6 +13,14 @@ Auto align portrait and create time lapse video.
 1. Put all photo to `./input`
 2. Run `cp daily_portrait/local_settings.sample.py daily_portrait/local_settings.py`
 3. Modify `daily_portrait/local_settings.py`, if you want change the default settings.
+    ```python
+    crop_rate = 0.8
+    image_pattern = "*.jpeg"
+    pil_min_filter_size = 3  # odd number, set 0 to no effect
+    fps = 4
+    # (width, height), if height=0, height will auto calculate by width
+    frame_size: tuple[int, int] | None = None
+    ```
 4. Run `python app.py`
    1. processed photos in `./output`
    2. The output video is `out.gif` and `out.avi`

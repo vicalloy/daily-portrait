@@ -1,8 +1,13 @@
 from pathlib import Path
+from typing import Iterable
 
 from PIL import Image
 
 from daily_portrait import settings
+
+
+def get_values(ctx: dict, keys: Iterable):
+    return (ctx[e] for e in keys)
 
 
 def get_image_date(fn: Path) -> str | None:
