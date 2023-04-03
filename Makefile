@@ -9,4 +9,4 @@ build-docker-image:
 	docker build -t daily-portrait:latest .
 
 docker-run:
-	docker run --rm -v $(pwd):/app daily-portrait:latest
+	docker run --rm -v `pwd`:/app daily-portrait:latest
