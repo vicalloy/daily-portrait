@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Iterable
 
+import cv2
 from PIL import Image
 
 from daily_portrait import settings
@@ -20,6 +21,16 @@ def get_image_date(fn: Path) -> str | None:
     return None
 
 
+def get_frame_size(
+    org_frame_size: tuple[int, int] | None, img_height: int, img_width: int
+):
+    if org_frame_size is None:
+        return img_width, img_height
+    if org_frame_size[1] > 0:
+        return org_frame_size
+    return org_frame_size[0], int(img_height * (org_frame_size[0] / img_width))
+
+
 def rename_photos(images_dir: Path):
     todo_names: list[tuple[Path, Path]] = []
     for img_filename in images_dir.glob(settings.image_pattern):
@@ -28,3 +39,8 @@ def rename_photos(images_dir: Path):
             todo_names.append((img_filename, new_filename))
     for names in todo_names:
         names[0].rename(names[1])
+
+
+def imshow(image):
+    cv2.imshow("image", image)
+    cv2.waitKey(0)

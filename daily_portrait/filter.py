@@ -3,12 +3,12 @@ from typing import cast
 
 import cv2
 import face_recognition
-import numpy as np
 from PIL import Image, ImageFilter
 
 from daily_portrait import settings
-from daily_portrait.utils import get_image_date, get_values
+from daily_portrait.utils import get_frame_size, get_image_date, get_values
 from daily_portrait.utils.alignment import get_eyes_points, move_face, rotation_face
+from daily_portrait.utils.image import resize_and_pad
 
 
 def load_image_as_np(ctx: dict, fn: Path):
@@ -18,64 +18,21 @@ def load_image_as_np(ctx: dict, fn: Path):
     ctx["height"], ctx["width"] = image.shape[:2]
 
 
-def resize_and_pad(ctx: dict):
+def image_to_same_size(ctx: dict):
     image, height, width = get_values(ctx, ["np-image", "height", "width"])
-    pad_color = (0, 0, 0)
-    if "standard_height" not in ctx:
-        ctx["standard_height"] = height
-        ctx["standard_width"] = width
-    standard_height, standard_width = get_values(
-        ctx, ["standard_height", "standard_width"]
-    )
-    if standard_width == width and standard_height == height:
-        return
+    # set first image's size to standard_size
+    if "standard_size" not in ctx:
+        ctx["standard_size"] = (width, height)
+    standard_size = ctx["standard_size"]
+    ctx["width"], ctx["height"] = standard_size
+    ctx["np-image"] = resize_and_pad(image, height, width, standard_size)
 
-    ctx["height"] = standard_height
-    ctx["width"] = standard_width
 
-    # interpolation method
-    interp = (
-        cv2.INTER_AREA
-        if height > standard_height or width > standard_width
-        else cv2.INTER_CUBIC
-    )
-
-    # aspect ratio of image
-    aspect = width / height
-    standard_aspect = standard_width / standard_height
-
-    if (standard_aspect > aspect) or (
-        (standard_aspect == 1) and (aspect <= 1)
-    ):  # new horizontal image
-        new_h = standard_height
-        new_w = np.round(new_h * aspect).astype(int)
-        pad_horz = (standard_width - new_w) / 2
-        pad_left, pad_right = np.floor(pad_horz).astype(int), np.ceil(pad_horz).astype(
-            int
-        )
-        pad_top, pad_bot = 0, 0
-    elif (standard_aspect < aspect) or (
-        (standard_aspect == 1) and (aspect >= 1)
-    ):  # new vertical image
-        new_w = standard_width
-        new_h = np.round(float(new_w) / aspect).astype(int)
-        pad_vert = float(standard_height - new_h) / 2
-        pad_top, pad_bot = np.floor(pad_vert).astype(int), np.ceil(pad_vert).astype(int)
-        pad_left, pad_right = 0, 0
-
-    # set pad color
-    # scale and pad
-    scaled_img = cv2.resize(image, (new_w, new_h), interpolation=interp)
-    scaled_img = cv2.copyMakeBorder(
-        scaled_img,
-        pad_top,
-        pad_bot,
-        pad_left,
-        pad_right,
-        borderType=cv2.BORDER_CONSTANT,
-        value=pad_color,
-    )
-    ctx["np-image"] = scaled_img
+def image_to_frame_size(ctx: dict):
+    image, height, width = get_values(ctx, ["np-image", "height", "width"])
+    frame_size = get_frame_size(settings.frame_size, img_width=width, img_height=height)
+    ctx["width"], ctx["height"] = frame_size
+    ctx["np-image"] = resize_and_pad(image, height, width, frame_size)
 
 
 def align_face(ctx: dict):
@@ -88,7 +45,7 @@ def align_face(ctx: dict):
 
 def crop_face(ctx: dict):
     crop_rate = settings.crop_rate
-    if not crop_rate or crop_rate == 1:
+    if not crop_rate or crop_rate >= 1:
         return
     image, height, width = get_values(ctx, ["np-image", "height", "width"])
     y_cut = int(height * (1 - crop_rate) / 2)
@@ -147,9 +104,10 @@ def save_image(ctx: dict):
 
 
 default_filters = [
-    resize_and_pad,
+    image_to_same_size,
     align_face,
     crop_face,
+    image_to_frame_size,
     add_date,
     as_pil_image,
     pil_min_filter,

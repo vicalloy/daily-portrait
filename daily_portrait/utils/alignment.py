@@ -34,14 +34,22 @@ def get_rotation_matrix(p1: Point, p2: Point, scale):
 
 
 def get_eyes_points(image: np.ndarray):
-    face_landmarks: np.ndarray = face_recognition.face_landmarks(image)
-    logger.debug(f"find face count: {len(face_landmarks)}")
-    assert len(face_landmarks) == 1
-    face_landmarks = face_landmarks[0]
+    face_landmarks_list: list[dict] = face_recognition.face_landmarks(image)
+    logger.debug(f"find face count: {len(face_landmarks_list)}")
+    assert face_landmarks_list, "must contain more than one face"
 
-    # print(face_landmarks)
-    left_eye = points_center(face_landmarks["left_eye"])
-    right_eye = points_center(face_landmarks["right_eye"])
+    max_dist = 0.0
+    left_eye: Point = None  # type: ignore
+    right_eye: Point = None  # type: ignore
+    for face_landmarks in face_landmarks_list:
+        _left_eye = points_center(face_landmarks["left_eye"])
+        _right_eye = points_center(face_landmarks["right_eye"])
+        dist = math.dist(_left_eye, _right_eye)
+        if dist > max_dist:
+            max_dist = dist
+            left_eye = _left_eye
+            right_eye = _right_eye
+
     logger.debug(f"eyes: {left_eye} {right_eye}")
     return left_eye, right_eye
 
