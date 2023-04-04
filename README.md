@@ -1,6 +1,6 @@
 # daily-portrait
 
-Auto align portrait and create time lapse video.
+Automatically align portraits and create a time-lapse video.
 
 ## Install
 
