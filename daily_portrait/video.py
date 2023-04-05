@@ -14,7 +14,7 @@ def images_to_video(input_dir: Path, output: Path):
         if out is None:
             frame_size = list(reversed(img.shape[:2]))
             out = cv2.VideoWriter(
-                str(output), cv2.VideoWriter_fourcc(*"DIVX"), settings.fps, frame_size
+                str(output), cv2.VideoWriter_fourcc(*"MJPG"), settings.fps, frame_size
             )
         out.write(img)
     assert out is not None
