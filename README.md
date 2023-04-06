@@ -24,3 +24,22 @@ Automatically align portraits and create a time-lapse video.
 4. Run `python app.py`
    1. processed photos are in `./output`
    2. The output video is `out.gif` and `out.avi`
+
+
+## How it works
+
+1. Rename each photo by its date in EXIF data. 
+   1. If a photo does not have EXIF data, keep its original name.
+2. Resize all photos to match the size of the first photo.
+3. Align face
+   1. Locate the two eyes in the photo.
+   2. Find the center point between the two eyes.
+   3. Rotate the photo to make the eyes horizontal.
+   4. Move the photo to align the center point.
+   5. Scale the face based on the distance between the eyes.
+4. Crop the face according to the ratio in the settings.
+5. Adjust each photo to fit the frame size.
+6. Add the date to each photo using the EXIF data. 
+   If a photo does not have EXIF data, skip this step.
+7. Save each photo to the output directory.
+8. Create a video from the photos in the output directory.
