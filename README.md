@@ -15,7 +15,6 @@ Automatically align portraits and create a time-lapse video.
 3. Modify `daily_portrait/local_settings.py`, if you want change the default settings.
     ```python
     crop_rate = 0.8
-    image_pattern = "*.jpeg"
     pil_min_filter_size = 0  # odd number must >=3, set 0 to no effect
     fps = 4
     # (width, height), if width=0, height will auto calculate by width

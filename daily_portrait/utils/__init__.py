@@ -4,8 +4,6 @@ from typing import Iterable
 import cv2
 from PIL import Image
 
-from daily_portrait import settings
-
 
 def get_values(ctx: dict, keys: Iterable):
     return (ctx[e] for e in keys)
@@ -33,7 +31,7 @@ def get_frame_size(
 
 def rename_photos(images_dir: Path):
     todo_names: list[tuple[Path, Path]] = []
-    for img_filename in images_dir.glob(settings.image_pattern):
+    for img_filename in list_images(images_dir):
         if dt := get_image_date(img_filename):
             new_filename = images_dir / f"{dt}{img_filename.suffix}"
             todo_names.append((img_filename, new_filename))
@@ -44,3 +42,11 @@ def rename_photos(images_dir: Path):
 def imshow(image):
     cv2.imshow("image", image)
     cv2.waitKey(0)
+
+
+def list_images(dir_path: Path):
+    return [
+        file
+        for file in dir_path.glob("*.*")
+        if file.suffix.lower() in {".jpe", ".jpeg"}
+    ]

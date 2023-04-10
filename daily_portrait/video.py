@@ -3,11 +3,11 @@ from pathlib import Path
 import cv2
 from PIL import Image
 
-from . import settings
+from . import list_images, settings
 
 
 def images_to_video(input_dir: Path, output: Path):
-    files = sorted(input_dir.glob(settings.image_pattern))
+    files = sorted(list_images(input_dir))
     out = None
     for img_filename in files:
         img = cv2.imread(str(img_filename))
@@ -22,7 +22,7 @@ def images_to_video(input_dir: Path, output: Path):
 
 
 def images_to_gif(input_dir: Path, output: Path):
-    files = sorted(input_dir.glob(settings.image_pattern))
+    files = sorted(list_images(input_dir))
     images = [Image.open(img_filename) for img_filename in files]
     images[0].save(
         output,
